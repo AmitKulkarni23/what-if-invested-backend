@@ -1,0 +1,113 @@
+plugins {
+    id 'application'
+    id 'java'
+    id 'idea'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// Configure IntelliJ IDEA
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/java/main")
+        testOutputDir = file("$buildDir/classes/java/test")
+    }
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+}
+
+dependencies {
+    // Use JUnit Jupiter for testing.
+    testImplementation libs.junit.jupiter
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // This dependency is used by the application.
+    implementation libs.guava
+
+    // Using AWS SDK for Java v2 BOM to ensure version consistency (BOM - Bill of Materials)
+    // BOM -  is a special dependency management tool in Maven and Gradle that centralizes and standardizes 
+    //  the versions of dependencies within a library or ecosystem.
+    implementation platform("software.amazon.awssdk:bom:2.20.102")
+
+    // AWS SDK for Java v2
+    implementation 'software.amazon.awssdk:lambda'
+    implementation 'software.amazon.awssdk:apigateway'
+    implementation 'software.amazon.awssdk:secretsmanager'
+
+    // Dagger for dependency injection
+    implementation 'com.google.dagger:dagger:2.46'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.46'
+
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    
+    // Enable annotation processing for Lombok
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    // Logging
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0'
+    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
+
+    // AWS Lambda dependencies (not part of AWS SDK v1, so these are fine)
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.2'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.1'
+
+    // Jackson dependency
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.14.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.14.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
+    implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.14.2'
+    implementation 'software.amazon.awssdk:ssm'
+}
+
+// Apply a specific Java toolchain to ease working on different environments.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+tasks.register('packageLambda', Zip) {
+    group = 'build'
+    description = 'Package the Lambda function into a deployable zip file'
+
+    from compileJava
+    from processResources
+
+    exclude('META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+
+    archiveFileName = 'what-if-invested-backend.zip'
+    destinationDirectory = layout.buildDirectory.dir("distributions").get().asFile
+}
+
+tasks.named('build') {
+    dependsOn('packageLambda')
+}

@@ -1,0 +1,59 @@
+*.js
+!jest.config.js
+!lib/utils/geolocation-function.js
+*.d.ts
+node_modules
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Ignore all .d.ts files
+*.d.ts
+
+# Ignore IntelliJ files
+.idea
+*.iml
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# macOS system files
+.DS_Store
+
+# Gradle build output directory
+build/
+
+# Gradle-specific cache directory
+.gradle/
+
+# Java build artifacts
+bin/
+*.class
+*.jar
+*.war
+*.zip
+
+# Log files
+*.log
+*~
+hs_err_pid*.log
+
+# Sensitive files
+*.jks
+*.keystore
+local.properties
+secrets.properties
+
+cdk.context.json
+
+*.vscode
+
+*windsurf
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
