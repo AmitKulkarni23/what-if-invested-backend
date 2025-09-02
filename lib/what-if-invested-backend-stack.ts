@@ -30,9 +30,12 @@ export class WhatIfInvestedBackendStack extends cdk.Stack {
       functionName: 'CoinbaseMerchantPaymentHandler',
       runtime: lambda.Runtime.JAVA_17,
       code: lambda.Code.fromAsset(path.join(__dirname, '../backend-application-code/app/build/distributions/what-if-invested-backend.zip')),
-      handler: 'org.handlers.CoinbaseMerchantPaymentHandler::handleRequest',
+      handler: 'org.handlers.CoinbaseMerchantPayments::handleRequest',
       memorySize: 512,
       timeout: cdk.Duration.seconds(30),
+      environment: {
+        COINBASE_COMMERCE_API_KEY_ENV: "Some API Key",
+      },
     });
 
     api.root.addMethod('POST', new LambdaIntegration(coinbaseMerchantPaymentHandler));
