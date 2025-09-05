@@ -20,7 +20,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CoinbaseService {
     private static final String COINBASE_CHARGES_URL = "https://api.commerce.coinbase.com/charges";
-    private static final String COINBASE_API_VERSION = "2018-03-22";
 
     private final HttpClient httpClient;
     private final ObjectMapper mapper;
