@@ -2,7 +2,6 @@ package org.dto;
 
 import lombok.Data;
 
-import java.util.List;
 
 @Data
 public class PaymentLink {
@@ -14,6 +13,5 @@ public class PaymentLink {
     private String currency;
     private String description;
     private String customerEmail;
-    private List<String> accepted;
     private String status; // pending | completed | expired | failed
 }

@@ -45,8 +45,11 @@ public class CoinbaseService {
             }
             body.setMetadata(metadata.isEmpty() ? null : metadata);
 
-            body.setRedirect_url(config.getFrontendBaseUrl());
-            body.setCancel_url(config.getFrontendBaseUrl());
+            String base = Optional.ofNullable(config.getFrontendBaseUrl()).orElse("http://localhost:3000");
+            String redirect = Optional.ofNullable(input.getRedirectUrl()).orElse(base + "/payments/success");
+            String cancel = Optional.ofNullable(input.getCancelUrl()).orElse(base + "/payments/cancel");
+            body.setRedirect_url(redirect);
+            body.setCancel_url(cancel);
 
             String payload = mapper.writeValueAsString(body);
 
@@ -80,7 +83,6 @@ public class CoinbaseService {
             link.setCurrency("USD");
             link.setDescription(input.getDescription());
             link.setCustomerEmail(input.getCustomerEmail());
-            link.setAccepted(input.getAccepted());
             link.setStatus("pending");
             return link;
 
@@ -114,4 +116,3 @@ public class CoinbaseService {
         return String.format(java.util.Locale.US, "%.2f", amount);
     }
 }
-

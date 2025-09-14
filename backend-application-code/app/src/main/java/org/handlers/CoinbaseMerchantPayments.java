@@ -29,6 +29,10 @@ public class CoinbaseMerchantPayments implements
     @NonNull
     private final ObjectMapper objectMapper;
 
+    private static final String ALLOWED_ORIGIN = System.getenv("ALLOWED_ORIGIN") != null && !System.getenv("ALLOWED_ORIGIN").isBlank()
+            ? System.getenv("ALLOWED_ORIGIN")
+            : "http://localhost:3000";
+
     public CoinbaseMerchantPayments() {
         this(DaggerComponentUtil.create());
     }
@@ -55,6 +59,7 @@ public class CoinbaseMerchantPayments implements
             log.info("Create charge: amount={} desc={} email={}", input.getAmount(), input.getDescription(), input.getCustomerEmail());
 
             PaymentLink link = coinbaseService.createCharge(input);
+            log.info("What is the payment link {}", link);
             return json(200, link);
         } catch (CoinbaseApiException e) {
             log.error("Coinbase API error: {}", e.getMessage());
@@ -80,6 +85,9 @@ public class CoinbaseMerchantPayments implements
         }
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
+        headers.put("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+        headers.put("Access-Control-Allow-Headers", "Content-Type,Authorization");
+        headers.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST");
         res.setHeaders(headers);
         return res;
     }
@@ -90,4 +98,3 @@ public class CoinbaseMerchantPayments implements
         return err;
     }
 }
-
